@@ -10,7 +10,7 @@ import requests
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from pathlib import Path
-from llama_index import download_loader, GPTSimpleVectorIndex
+from llama_index import download_loader, GPTVectorStoreIndex
 from openai.embeddings_utils import cosine_similarity, get_embedding
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -358,7 +358,7 @@ def process_pdf():
           f.write(request.data)
     global document, index
     document = loader.load_data(file=Path('./upload.pdf'))
-    index = GPTSimpleVectorIndex.from_documents(document)
+    index = GPTVectorStoreIndex.from_documents(document)
     pdf = pdfplumber.open(BytesIO(file))
     chatbot = Chatbot()
     paper_text, misc_text, title_related = chatbot.parse_paper(pdf)
@@ -391,7 +391,7 @@ def download_pdf():
           f.write(r.content)
     global document, index
     document = loader.load_data(file=Path('./upload.pdf'))
-    index = GPTSimpleVectorIndex.from_documents(document)
+    index = GPTVectorStoreIndex.from_documents(document)
     pdf = pdfplumber.open(BytesIO(r.content))
     paper_text, misc_text, title_related = chatbot.parse_paper(pdf)
     global df_main, df_misc
